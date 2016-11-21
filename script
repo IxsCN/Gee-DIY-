@@ -1,0 +1,42 @@
+#!/bin/sh
+# Copyright (C) 2016 evenS
+
+install(){
+
+    tar xzf backgroud.tar.gz -C /
+    mkdir -p /tmp/data/hwf_download/mobile/backgroud/
+    chmod 777 /tmp/data/hwf_download/mobile/backgroud/
+    \cp -rf ./default.jpg /tmp/data/hwf_download/mobile/backgroud/default.jpg
+    ln -sb /tmp/data/hwf_download/mobile/backgroud/ /www/
+    path_js
+    sed -i '\#<link rel="stylesheet" type="text/css" href="<%=resource%>/v2/style/overbackgroud.css">#d' /usr/lib/lua/luci/view/admin_web/footer.htm
+    sed -i '\#<link rel="stylesheet" type="text/css" href="<%=resource%>/v2/style/overbackgroud.css">#d' /usr/lib/lua/luci/view/admin_web/header.htm #兼容新版本黑色主题
+    rm -rf /var/run/luci-indexcache
+}
+
+uninstall(){
+
+    restore_js
+    rm -rf /usr/lib/lua/luci/controller/app/backgroud.lua /usr/lib/lua/luci/view/app/backgroud.htm /www/turbo-static/turbo/v2/js/backgroud.js /www/backgroud/
+    if [ -f "/etc/market/GeeBlack.script" -a -f "/www/turbo-static/turbo/v2/style/overbackgroud.css" ]; then
+        echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"<%=resource%>/v2/style/overbackgroud.css\">" >> /usr/lib/lua/luci/view/admin_web/header.htm
+    fi
+    rm -rf /var/run/luci-indexcache
+}
+
+path_js(){
+
+	if [  `grep -c "backgroud.js"  /usr/lib/lua/luci/view/admin_web/footer.htm` = 0 ]; then
+		echo "<script type=\"text/javascript\" src=\"<%=resource%>/v2/js/backgroud.js\"></script>" >> /usr/lib/lua/luci/view/admin_web/footer.htm
+	fi
+	if [  `grep -c "backgroud.js"  /www/turbo-static/turbo/v2/js/admin_web/login.js` = 0 ]; then
+		echo "$.getScript(\"/turbo-static/turbo/v2/js/backgroud.js\");" >> /www/turbo-static/turbo/v2/js/admin_web/login.js
+	fi
+}
+
+restore_js(){
+
+    sed -i '\#<script type="text/javascript" src="<%=resource%>/v2/js/backgroud.js"></script>#d' /usr/lib/lua/luci/view/admin_web/footer.htm
+    sed -i '\#$.getScript("/turbo-static/turbo/v2/js/backgroud.js");#d' /www/turbo-static/turbo/v2/js/admin_web/login.js
+
+}
