@@ -12,6 +12,7 @@ install(){
     sed -i '\#<link rel="stylesheet" type="text/css" href="<%=resource%>/v2/style/overbackgroud.css">#d' /usr/lib/lua/luci/view/admin_web/footer.htm
     sed -i '\#<link rel="stylesheet" type="text/css" href="<%=resource%>/v2/style/overbackgroud.css">#d' /usr/lib/lua/luci/view/admin_web/header.htm #兼容新版本黑色主题
     rm -rf /var/run/luci-indexcache
+    /etc/init.d/build_loginpage start
 }
 
 uninstall(){
@@ -22,6 +23,7 @@ uninstall(){
         echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"<%=resource%>/v2/style/overbackgroud.css\">" >> /usr/lib/lua/luci/view/admin_web/header.htm
     fi
     rm -rf /var/run/luci-indexcache
+    /etc/init.d/build_loginpage start
 }
 
 path_js(){
